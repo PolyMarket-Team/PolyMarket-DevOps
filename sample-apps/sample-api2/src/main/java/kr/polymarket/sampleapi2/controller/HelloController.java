@@ -9,7 +9,7 @@ public class HelloController {
 
     @GetMapping("/")
     public Mono<String> hello2() {
-        return Mono.just("hello2");
+        return Mono.just("Hello2");
     }
 
 }

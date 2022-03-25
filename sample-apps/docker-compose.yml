@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  sample-nginx:
+    image: nginx
+    container_name: sample-nginx
+    networks:
+      sample-network:
+        aliases: 
+          - nginx.polymarket.kr
+  sample-api1:
+    image: sample-api1:local
+    container_name: sample-api1
+    hostname: sample-api1.polymarket.kr
+    networks:
+      sample-network:
+  sample-api2:
+    image: sample-api2:local
+    container_name: sample-api2
+    hostname: sample-api2.polymarket.kr
+    networks:
+      sample-network:
+
+networks:
+  sample-network:
