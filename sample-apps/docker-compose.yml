@@ -8,6 +8,16 @@ services:
       sample-network:
         aliases: 
           - nginx.polymarket.kr
+  sample-front:
+    image: sample-front:local
+    container_name: sample-front
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      sample-network:
+        aliases: 
+          - sample-front.polymarket.kr
   sample-api1:
     image: sample-api1:local
     container_name: sample-api1
