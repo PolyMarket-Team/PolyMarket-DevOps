@@ -4,6 +4,11 @@ services:
   sample-nginx:
     image: nginx
     container_name: sample-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./nginx-conf.d/sample-app-nginx.conf:/etc/nginx/conf.d/default.conf"
     networks:
       sample-network:
         aliases: 
@@ -11,9 +16,6 @@ services:
   sample-front:
     image: sample-front:local
     container_name: sample-front
-    ports:
-      - "80:80"
-      - "443:443"
     networks:
       sample-network:
         aliases: 
