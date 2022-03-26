@@ -32,6 +32,12 @@ services:
     hostname: sample-api2.polymarket.kr
     networks:
       sample-network:
+  sample-jenkins:
+    image: jenkins/jenkins
+    container_name: sample-jenkins
+    hostname: sample-jenkins.polymarket.kr
+    networks:
+      sample-network:
 
 networks:
   sample-network:
