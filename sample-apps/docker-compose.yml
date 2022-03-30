@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  sample-nginx:
+    image: nginx
+    container_name: sample-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    platform: linux/arm64/v8
+    volumes:
+      - "./nginx-conf.d/sample-app-nginx.conf:/etc/nginx/conf.d/default.conf"
+    networks:
+      sample-network:
+        aliases: 
+          - nginx.polymarket.kr
+  sample-front:
+    image: sample-front:local
+    container_name: sample-front
+    networks:
+      sample-network:
+        aliases: 
+          - sample-front.polymarket.kr
+  sample-api1:
+    image: sample-api1:local
+    container_name: sample-api1
+    hostname: sample-api1.polymarket.kr
+    networks:
+      sample-network:
+  sample-api2:
+    image: sample-api2:local
+    container_name: sample-api2
+    hostname: sample-api2.polymarket.kr
+    networks:
+      sample-network:
+  sample-jenkins:
+    image: jenkins/jenkins:latest-jdk11
+    container_name: sample-jenkins
+    hostname: sample-jenkins.polymarket.kr
+    platform: "linux/arm64"
+    networks:
+      sample-network:
+
+networks:
+  sample-network:
