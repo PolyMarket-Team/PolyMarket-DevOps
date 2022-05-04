@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:1.12.6
+    container_name: polymarket-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-conf.d/polymarket-dev-nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./certbot/etc/letsencrypt:/etc/letsencrypt
+      - ./www:/var/www/html
+    networks:
+      polymarket-network:
+        aliases: 
+          - nginx.polymarket.kr
+  certbot:
+    image: certbot/certbot:v1.27.0
+    container_name: polymarket-certbot
+    volumes:
+      - ./certbot/etc/letsencrypt:/etc/letsencrypt
+      - ./certbot/var:/var/lib/certbot
+      - ./www:/var/www/html
+    command: certonly --webroot --webroot-path=/var/www/html --email sinwoo1225@gmail.com --agree-tos --no-eff-email --force-renewal -d polymarket.kr -d www.polymarket.kr -d jenkins-dev.polymarket.kr -d front-dev.polymarket.kr
+    depends_on:
+      - nginx
+  front:
+    image: polymarket-front:local
+    container_name: polymarket-front
+    networks:
+      polymarket-network:
+        aliases: 
+          - front-dev.polymarket.kr
+  jenkins:
+    image: jenkins/jenkins:26.3.0
+    container_name: polymarket-jenkins
+    hostname: jenkins-dev.polymarket.kr
+    volumes:
+      - /home/polymarket/jenkins:/var/jenkins_home
+    networks:
+      polymarket-network:
+        aliases: 
+          - jenkins-dev.polymarket.kr
+  # mysql:
+  #   image: mysql:8.0.29
+  #   container_name: polymarket-mysql
+  #   networks:
+  #     polymarket-network:
+  #       aliases: 
+  #         - mysql-dev.polymarket.kr
+  # redis:
+  #   redis: redis:7.0.0
+  #   container_name: polymarket-redis
+  #   networks:
+  #     polymarket-network:
+  #       aliases: 
+  #         - redis-dev.polymarket.kr
+
+networks:
+  polymarket-network:
