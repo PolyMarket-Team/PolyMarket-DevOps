@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   nginx:
-    image: nginx:1.12.6
+    image: nginx:1.21.6
     container_name: polymarket-nginx
     ports:
       - "80:80"
@@ -33,7 +33,7 @@ services:
         aliases: 
           - front-dev.polymarket.kr
   jenkins:
-    image: jenkins/jenkins:26.3.0
+    image: jenkins/jenkins:latest-jdk11
     container_name: polymarket-jenkins
     hostname: jenkins-dev.polymarket.kr
     volumes:
