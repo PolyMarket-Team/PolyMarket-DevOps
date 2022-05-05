@@ -28,6 +28,7 @@ services:
   front:
     image: polymarket-front:local
     container_name: polymarket-front
+    hostname: jenkins-dev.polymarket.kr
     networks:
       polymarket-network:
         aliases: 
