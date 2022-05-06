@@ -45,7 +45,7 @@ services:
           - jenkins-dev.polymarket.kr
   api:
     image: polymarket-api:local
-    container_name: config-server
+    container_name: polymarket-api
     hostname: api-dev.polymarket.kr
     environment: 
       - SPRING_PROFILES_ACTIVE=dev
