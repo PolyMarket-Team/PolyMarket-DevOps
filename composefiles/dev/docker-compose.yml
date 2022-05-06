@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:1.21.6
+    container_name: polymarket-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-conf.d/polymarket-dev-nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./certbot/etc/letsencrypt:/etc/letsencrypt
+      - ./www:/var/www/html
+    networks:
+      polymarket-network:
+        aliases: 
+          - nginx.polymarket.kr
+  certbot:
+    image: certbot/certbot:v1.27.0
+    container_name: polymarket-certbot
+    volumes:
+      - ./certbot/etc/letsencrypt:/etc/letsencrypt
+      - ./certbot/var:/var/lib/certbot
+      - ./www:/var/www/html
+    command: certonly --webroot --webroot-path=/var/www/html --email sinwoo1225@gmail.com --agree-tos --no-eff-email --force-renewal -d polymarket.kr -d www.polymarket.kr -d jenkins-dev.polymarket.kr -d front-dev.polymarket.kr -d api-dev.polymarket.kr
+    depends_on:
+      - nginx
+  front:
+    image: polymarket-front:local
+    container_name: polymarket-front
+    hostname: front-dev.polymarket.kr
+    networks:
+      polymarket-network:
+        aliases: 
+          - front-dev.polymarket.kr
+  jenkins:
+    image: jenkins/jenkins:latest-jdk11
+    container_name: polymarket-jenkins
+    hostname: jenkins-dev.polymarket.kr
+    volumes:
+      - /home/polymarket/jenkins:/var/jenkins_home
+    networks:
+      polymarket-network:
+        aliases: 
+          - jenkins-dev.polymarket.kr
+  mysql:
+    image: mysql:8.0.29
+    container_name: polymarket-mysql
+    hostname: mysql-dev.polymarket.kr
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: polymarket1!
+      TZ: Asia/Seoul
+    volumes:
+      - /home/polymarket/mysql:/var/lib/mysql 
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    networks:
+      polymarket-network:
+        aliases: 
+          - mysql-dev.polymarket.kr
+  redis:
+    image: redis:7.0.0
+    container_name: polymarket-redis
+    hostname: redis-dev.polymarket.kr
+    ports:
+      - 6379:6379
+    restart: always
+    volumes:
+      - /home/polymarket/redis/data:/data
+    networks:
+      polymarket-network:
+        aliases: 
+          - redis-dev.polymarket.kr
+
+networks:
+  polymarket-network:
