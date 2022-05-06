@@ -22,7 +22,7 @@ services:
       - ./certbot/etc/letsencrypt:/etc/letsencrypt
       - ./certbot/var:/var/lib/certbot
       - ./www:/var/www/html
-    command: certonly --webroot --webroot-path=/var/www/html --email sinwoo1225@gmail.com --agree-tos --no-eff-email --force-renewal -d polymarket.kr -d www.polymarket.kr -d jenkins-dev.polymarket.kr -d front-dev.polymarket.kr
+    command: certonly --webroot --webroot-path=/var/www/html --email sinwoo1225@gmail.com --agree-tos --no-eff-email --force-renewal -d polymarket.kr -d www.polymarket.kr -d jenkins-dev.polymarket.kr -d front-dev.polymarket.kr -d api-dev.polymarket.kr
     depends_on:
       - nginx
   front:
@@ -43,20 +43,37 @@ services:
       polymarket-network:
         aliases: 
           - jenkins-dev.polymarket.kr
-  # mysql:
-  #   image: mysql:8.0.29
-  #   container_name: polymarket-mysql
-  #   networks:
-  #     polymarket-network:
-  #       aliases: 
-  #         - mysql-dev.polymarket.kr
-  # redis:
-  #   redis: redis:7.0.0
-  #   container_name: polymarket-redis
-  #   networks:
-  #     polymarket-network:
-  #       aliases: 
-  #         - redis-dev.polymarket.kr
+  mysql:
+    image: mysql:8.0.29
+    container_name: polymarket-mysql
+    hostname: mysql-dev.polymarket.kr
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: polymarket1!
+      TZ: Asia/Seoul
+    volumes:
+      - /home/polymarket/mysql:/var/lib/mysql 
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    networks:
+      polymarket-network:
+        aliases: 
+          - mysql-dev.polymarket.kr
+  redis:
+    image: redis:7.0.0
+    container_name: polymarket-redis
+    hostname: redis-dev.polymarket.kr
+    ports:
+      - 6379:6379
+    restart: always
+    volumes:
+      - /home/polymarket/redis/data:/data
+    networks:
+      polymarket-network:
+        aliases: 
+          - redis-dev.polymarket.kr
 
 networks:
   polymarket-network:
