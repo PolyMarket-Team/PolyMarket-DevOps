@@ -37,6 +37,8 @@ services:
     image: jenkins/jenkins:latest-jdk11
     container_name: polymarket-jenkins
     hostname: jenkins-dev.polymarket.kr
+    environment: 
+      - SPRING_PROFILES_ACTIVE=dev
     volumes:
       - /home/polymarket/jenkins:/var/jenkins_home
     networks:
