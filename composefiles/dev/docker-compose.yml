@@ -43,6 +43,22 @@ services:
       polymarket-network:
         aliases: 
           - jenkins-dev.polymarket.kr
+  api:
+    image: polymarket-api:local
+    container_name: polymarket-api
+    hostname: api-dev.polymarket.kr
+    environment: 
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      polymarket-network:
+  config-server:
+    image: polymarket-config-server:local
+    container_name: config-server
+    hostname: config-dev.polymarket.kr
+    environment: 
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      polymarket-network:
   mysql:
     image: mysql:8.0.29
     container_name: polymarket-mysql
