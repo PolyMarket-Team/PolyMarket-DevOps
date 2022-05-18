@@ -95,6 +95,41 @@ services:
       polymarket-network:
         aliases: 
           - redis-dev.polymarket.kr
+  elasticsearch:
+    container_name: polymarket-elasticsearch
+    image: elasticsearch:7.9.0
+    ports:
+     - 9200:9200
+     - 9300:9300
+    volumes:
+     - /home/polymarket/elasticsearch/data:/usr/share/elasticsearch/data
+    environment:
+     - discovery.type=single-node
+     - "ES_JAVA_OPTS=-Xms512m -Xmx1024m"
+     - TZ=Asia/Seoul
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    restart: always
+    networks:
+      polymarket-network:
+        aliases: 
+          - es-dev.polymarket.kr
+  kibana:
+    container_name: polymarket-kibana
+    image: kibana:7.9.0
+    ports:
+     - 5601:5601
+    environment:
+     ELASTICSERCH_UTL: http://es-dev.polymarket.kr:9200
+     ELASTICSEARCH_HOSTS: http://es-dev.polymarket.kr:9200
+     TZ: Asia/Seoul
+    restart: always
+    networks:
+      polymarket-network:
+        aliases: 
+          - kibana-dev.polymarket.kr
 
 networks:
   polymarket-network:
