@@ -39,6 +39,11 @@ services:
     hostname: jenkins-dev.polymarket.kr
     volumes:
       - /home/polymarket/jenkins:/var/jenkins_home
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
     networks:
       polymarket-network:
         aliases: 
