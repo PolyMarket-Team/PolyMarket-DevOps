@@ -39,6 +39,11 @@ services:
     hostname: jenkins-dev.polymarket.kr
     volumes:
       - /home/polymarket/jenkins:/var/jenkins_home
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
     networks:
       polymarket-network:
         aliases: 
@@ -90,6 +95,61 @@ services:
       polymarket-network:
         aliases: 
           - redis-dev.polymarket.kr
+  elasticsearch:
+    container_name: polymarket-elasticsearch
+    image: elasticsearch:7.9.0
+    ports:
+     - 9200:9200
+     - 9300:9300
+    volumes:
+     - /home/polymarket/elasticsearch/data:/usr/share/elasticsearch/data
+    environment:
+     - discovery.type=single-node
+     - "ES_JAVA_OPTS=-Xms512m -Xmx1024m"
+     - TZ=Asia/Seoul
+     - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    restart: always
+    networks:
+      polymarket-network:
+        aliases: 
+          - es-dev.polymarket.kr
+  logstash:
+    container_name: polymarket-logstash
+    image: logstash:7.17.3
+    environment:
+      - LS_JAVA_OPTS=-Xmx256m -Xms256m
+      - xpack.monitoring.enabled=true
+      - xpack.monitoring.elasticsearch.hosts=http://es-dev.polymarket.kr
+    volumes:
+      - ./logstash/logstash.conf:/usr/shares/logstash/config/logstash.conf
+      - ./logstash/mysql-connector-java-8.0.29.jar:/usr/shares/logstash/mysql-connector-java-8.0.29.jar
+    depends_on:
+      - elasticsearch
+      - mysql
+    networks:
+      polymarket-network:
+        aliases: 
+          - logstash-dev.polymarket.kr
+  kibana:
+    container_name: polymarket-kibana
+    image: kibana:7.9.0
+    ports:
+     - 5601:5601
+    environment:
+     ELASTICSERCH_UTL: http://es-dev.polymarket.kr:9200
+     ELASTICSEARCH_HOSTS: http://es-dev.polymarket.kr:9200
+     TZ: Asia/Seoul
+    restart: always
+    depends_on:
+      - elasticsearch
+    networks:
+      polymarket-network:
+        aliases: 
+          - kibana-dev.polymarket.kr
 
 networks:
   polymarket-network:
