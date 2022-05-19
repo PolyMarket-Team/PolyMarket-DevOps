@@ -107,6 +107,7 @@ services:
      - discovery.type=single-node
      - "ES_JAVA_OPTS=-Xms512m -Xmx1024m"
      - TZ=Asia/Seoul
+     - bootstrap.memory_lock=true
     ulimits:
       memlock:
         soft: -1
@@ -116,6 +117,23 @@ services:
       polymarket-network:
         aliases: 
           - es-dev.polymarket.kr
+  logstash:
+    container_name: polymarket-logstash
+    image: logstash:7.17.3
+    environment:
+      - LS_JAVA_OPTS=-Xmx256m -Xms256m
+      - xpack.monitoring.enabled=true
+      - xpack.monitoring.elasticsearch.hosts=http://es-dev.polymarket.kr
+    volumes:
+      - ./logstash/logstash.conf:/usr/shares/logstash/config/logstash.conf
+      - ./logstash/mysql-connector-java-8.0.29.jar:/usr/shares/logstash/mysql-connector-java-8.0.29.jar
+    depends_on:
+      - elasticsearch
+      - mysql
+    networks:
+      polymarket-network:
+        aliases: 
+          - logstash-dev.polymarket.kr
   kibana:
     container_name: polymarket-kibana
     image: kibana:7.9.0
@@ -126,6 +144,8 @@ services:
      ELASTICSEARCH_HOSTS: http://es-dev.polymarket.kr:9200
      TZ: Asia/Seoul
     restart: always
+    depends_on:
+      - elasticsearch
     networks:
       polymarket-network:
         aliases: 
